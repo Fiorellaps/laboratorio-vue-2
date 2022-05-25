@@ -1,18 +1,32 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <div v-if="error">Error :(</div>
+    <Suspense>
+      <template #default>
+        <MemberList />
+      </template>
+      <template #fallback>loading...</template>
+    </Suspense>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import { defineComponent, onErrorCaptured, ref, Ref } from "vue";
+import MemberList from "@/components/MemberList.vue";
 
 export default defineComponent({
   name: "Home",
   components: {
-    HelloWorld,
+    MemberList,
+  },
+  setup() {
+    const error: Ref<unknown> = ref();
+    onErrorCaptured((errorCaptured) => {
+      error.value = errorCaptured;
+    });
+    return {
+      error,
+    };
   },
 });
 </script>
