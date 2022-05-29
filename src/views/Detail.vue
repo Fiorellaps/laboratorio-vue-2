@@ -13,27 +13,21 @@
 import { defineComponent } from "vue";
 import { RouteLocation } from "vue-router";
 import { Member } from "@/types";
-import { membersService } from "@/service/membersService";
 
 export default defineComponent({
   data: () => ({
     member: {} as Member,
   }),
   computed: {
-    id(): string {
-      return String((this.$route as RouteLocation).params.id);
-    },
-    organization(): string {
-      return String((this.$route as RouteLocation).params.organization);
+    login(): string {
+      return String((this.$route as RouteLocation).params.login);
     },
   },
   created() {
-    membersService
-      .getMember(this.id, this.organization)
-      .then((member: Member | undefined) => {
-        if (member) {
-          this.member = member;
-        }
+    fetch(`https://api.github.com/users/${this.login}`)
+      .then((r) => r.json())
+      .then((res) => {
+        if (res) this.member = res;
       });
   },
 });

@@ -9,7 +9,7 @@
     </div>
     <ul>
       <li v-for="member in list" :key="member.id">
-        <router-link :to="`/detail/${keyword}/${member.id}`">
+        <router-link :to="`/detail/${member.login}`">
           <article class="grid member-container card">
             <div class="image">
               <img :src="member.avatar_url" alt="" class="member-img" />
@@ -26,33 +26,33 @@
   </section>
 </template>
 <script lang="ts">
-import { computed, defineComponent, Ref, ref } from "vue";
+import { defineComponent, Ref, ref } from "vue";
 import { Member } from "@/types";
-import { useMembersApi } from "@/composables/membersApi";
 
 export default defineComponent({
+  // Create a new store instance.
+
   async setup() {
     const keyword: Ref<string> = ref("lemoncode");
-    const { list } = await useMembersApi(keyword.value.toLocaleLowerCase());
-    let newList;
-    async function submitOrganization() {
-      console.log(keyword.value);
-      newList = await useMembersApi(keyword.value.toLocaleLowerCase());
-      console.log(newList);
+
+    const list: Ref<Member[]> = ref([]);
+    //const { list } = await useMembersApi(keyword.value.toLocaleLowerCase());
+    const getMembers = (organization: string) => {
+      fetch(`https://api.github.com/orgs/${organization}/members`)
+        .then((r) => r.json())
+        .then((res) => (list.value = res));
+    };
+    getMembers(keyword.value.toLocaleLowerCase());
+
+    function submitOrganization() {
+      getMembers(keyword.value.toLocaleLowerCase());
     }
-    /*const filteredList = computed<Member[]>(() => {
-      return list.value.filter((product) => {
-        return product.title
-          .toLowerCase()
-          .includes(keyword.value.toLocaleLowerCase());
-      });
-    });*/
 
     return {
       list,
       keyword,
       submitOrganization,
-      newList,
+      getMembers,
     };
   },
 });
