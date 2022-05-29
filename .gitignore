@@ -2,7 +2,7 @@
 node_modules
 /dist
 src/service_
-serc/composables_
+src/composables_
 
 # local env files
 .env.local
